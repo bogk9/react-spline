@@ -56,6 +56,7 @@ const Spline = forwardRef<HTMLDivElement, SplineProps>(
   ) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isCanvasOffscreen, setIsCanvasOffscreen] = useState(false);
 
     // Initialize runtime when component is mounted
     useEffect(() => {
@@ -106,10 +107,19 @@ const Spline = forwardRef<HTMLDivElement, SplineProps>(
 
       if (canvasRef.current) {
         speApp = new Application(canvasRef.current, { renderOnDemand });
-        const offscreenCanvas = canvasRef.current.transferControlToOffscreen();
-        const worker = new Worker('canvas-worker.js');
+        let canvas = canvasRef.current;
+        let offscreenCanvas: OffscreenCanvas;
 
-        worker.postMessage({canvas: offscreenCanvas}, [offscreenCanvas]);
+        if(!isCanvasOffscreen){
+          console.log("SETTTTTTING")
+          offscreenCanvas = canvas.transferControlToOffscreen();
+          setIsCanvasOffscreen(true);
+        }
+        else
+          offscreenCanvas = canvas as unknown as OffscreenCanvas;
+
+        const worker = new Worker('canvas-worker.js');
+        worker.postMessage({canvas: offscreenCanvas, speApp, events, scene, setIsLoading, onLoad}, [offscreenCanvas]);
 
 /*
         async function init() {

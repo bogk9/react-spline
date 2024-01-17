@@ -308,6 +308,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@boguskania/react-spline-offscreen@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@boguskania/react-spline-offscreen@workspace:."
+  dependencies:
+    "@splinetool/runtime": ^0.9.232
+    "@types/animejs": ^3.1.7
+    "@types/lodash.debounce": ^4.0.7
+    "@types/node": ^18.14.1
+    "@types/react": ^18.0.28
+    "@types/react-dom": ^18.0.11
+    "@vitejs/plugin-react": ^3.1.0
+    animejs: ^3.2.1
+    lodash.debounce: ^4.0.8
+    modern-normalize: ^1.1.0
+    np: ^7.6.3
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    react-merge-refs: ^2.0.1
+    typescript: ^4.9.5
+    vite: ^4.1.4
+  peerDependencies:
+    "@splinetool/runtime": "*"
+    react: ">=17.0.0"
+    react-dom: ">=17.0.0"
+  languageName: unknown
+  linkType: soft
+
 "@esbuild/android-arm64@npm:0.16.17":
   version: 0.16.17
   resolution: "@esbuild/android-arm64@npm:0.16.17"
@@ -633,33 +660,6 @@ __metadata:
   checksum: 83839f13da2c29d55c97abc3bc2c55b250d33a0447554997a85c539e058e57b8da092da396e252b11ec24a0279a0bed1f537fa26302209327060643e327f81d2
   languageName: node
   linkType: hard
-
-"@splinetool/react-spline@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@splinetool/react-spline@workspace:."
-  dependencies:
-    "@splinetool/runtime": ^0.9.232
-    "@types/animejs": ^3.1.7
-    "@types/lodash.debounce": ^4.0.7
-    "@types/node": ^18.14.1
-    "@types/react": ^18.0.28
-    "@types/react-dom": ^18.0.11
-    "@vitejs/plugin-react": ^3.1.0
-    animejs: ^3.2.1
-    lodash.debounce: ^4.0.8
-    modern-normalize: ^1.1.0
-    np: ^7.6.3
-    react: ^18.2.0
-    react-dom: ^18.2.0
-    react-merge-refs: ^2.0.1
-    typescript: ^4.9.5
-    vite: ^4.1.4
-  peerDependencies:
-    "@splinetool/runtime": "*"
-    react: ">=17.0.0"
-    react-dom: ">=17.0.0"
-  languageName: unknown
-  linkType: soft
 
 "@splinetool/runtime@npm:^0.9.232":
   version: 0.9.232
