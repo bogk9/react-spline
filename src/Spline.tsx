@@ -107,19 +107,18 @@ const Spline = forwardRef<HTMLDivElement, SplineProps>(
 
       if (canvasRef.current) {
         speApp = new Application(canvasRef.current, { renderOnDemand });
-        let canvas: any = canvasRef.current;
-        let offscreenCanvas: OffscreenCanvas;
-
-        if(!canvas.oncontextrestored){
-          console.log("SETTTTTTING")
-          offscreenCanvas = canvas.transferControlToOffscreen();
-          setIsCanvasOffscreen(true);
+        //const canvas = canvasRef.current
+        let offscreen
+        try {
+          // @ts-ignore
+          offscreen = canvasRef.current.transferControlToOffscreen()
+        } catch (e) {
+          // Browser doesn't support offscreen canvas at all
+          return
         }
-        else
-          offscreenCanvas = canvas as unknown as OffscreenCanvas;
-
+    
         const worker = new Worker('canvas-worker.js');
-        worker.postMessage({canvas: offscreenCanvas, speApp, events, scene, setIsLoading, onLoad}, [offscreenCanvas]);
+        worker.postMessage({canvas: offscreen, speApp, events, scene, setIsLoading, onLoad}, [offscreen]);
 
 /*
         async function init() {
