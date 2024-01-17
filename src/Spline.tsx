@@ -76,12 +76,15 @@ const Spline = forwardRef<HTMLDivElement, SplineProps>(
         }
       };
 
+      console.log("INIT")
       // Initialize the worker
       // @ts-ignore
       worker.postMessage({
         type: 'init',
         offscreen,
       }, [offscreen]);
+
+      console.log("LOAD SCENE")
 
       // Load the scene
       // @ts-ignore
