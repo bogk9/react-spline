@@ -1,36 +1,20 @@
+// Spline.js
 import { useEffect, useRef, useState, forwardRef } from 'react';
-import { Application } from '@splinetool/runtime';
-import type {
-  SPEObject,
-  SplineEvent,
-  SplineEventName,
-} from '@splinetool/runtime';
-import ParentSize from './ParentSize';
 
-export type { SPEObject, SplineEvent, SplineEventName };
-
-export interface SplineProps
-  extends Omit<
-    React.HTMLAttributes<HTMLDivElement>,
-    | 'onLoad'
-    | 'onMouseDown'
-    | 'onMouseUp'
-    | 'onMouseHover'
-    | 'onKeyDown'
-    | 'onKeyUp'
-    | 'onWheel'
-  > {
+export interface SplineProps {
   scene: string;
-  onLoad?: (e: Application) => void;
-  onMouseDown?: (e: SplineEvent) => void;
-  onMouseUp?: (e: SplineEvent) => void;
-  onMouseHover?: (e: SplineEvent) => void;
-  onKeyDown?: (e: SplineEvent) => void;
-  onKeyUp?: (e: SplineEvent) => void;
-  onStart?: (e: SplineEvent) => void;
-  onLookAt?: (e: SplineEvent) => void;
-  onFollow?: (e: SplineEvent) => void;
-  onWheel?: (e: SplineEvent) => void;
+  style?: React.CSSProperties;
+  onLoad?: (e: any) => void; // Change the type if needed
+  onMouseDown?: (e: any) => void; // Change the type if needed
+  onMouseUp?: (e: any) => void; // Change the type if needed
+  onMouseHover?: (e: any) => void; // Change the type if needed
+  onKeyDown?: (e: any) => void; // Change the type if needed
+  onKeyUp?: (e: any) => void; // Change the type if needed
+  onStart?: (e: any) => void; // Change the type if needed
+  onLookAt?: (e: any) => void; // Change the type if needed
+  onFollow?: (e: any) => void; // Change the type if needed
+  onWheel?: (e: any) => void; // Change the type if needed
+  worker: (e: any) => void; // Change the type if needed
   renderOnDemand?: boolean;
 }
 
@@ -49,6 +33,7 @@ const Spline = forwardRef<HTMLDivElement, SplineProps>(
       onFollow,
       onWheel,
       onLoad,
+      worker,
       renderOnDemand = true,
       ...props
     },
@@ -56,117 +41,85 @@ const Spline = forwardRef<HTMLDivElement, SplineProps>(
   ) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [isCanvasOffscreen, setIsCanvasOffscreen] = useState(false);
 
-    // Initialize runtime when component is mounted
     useEffect(() => {
       setIsLoading(true);
 
-      let speApp: Application;
-      const events: {
-        name: SplineEventName;
-        cb?: (e: SplineEvent) => void;
-      }[] = [
-        {
-          name: 'mouseDown',
-          cb: onMouseDown,
-        },
-        {
-          name: 'mouseUp',
-          cb: onMouseUp,
-        },
-        {
-          name: 'mouseHover',
-          cb: onMouseHover,
-        },
-        {
-          name: 'keyDown',
-          cb: onKeyDown,
-        },
-        {
-          name: 'keyUp',
-          cb: onKeyUp,
-        },
-        {
-          name: 'start',
-          cb: onStart,
-        },
-        {
-          name: 'lookAt',
-          cb: onLookAt,
-        },
-        {
-          name: 'follow',
-          cb: onFollow,
-        },
-        {
-          name: 'scroll',
-          cb: onWheel,
-        },
-      ];
+      if (!worker) return
 
-      if (canvasRef.current) {
-        speApp = new Application(canvasRef.current, { renderOnDemand });
-        //const canvas = canvasRef.current
-        let offscreen
-        try {
-          // @ts-ignore
-          offscreen = canvasRef.current.transferControlToOffscreen()
-        } catch (e) {
-          // Browser doesn't support offscreen canvas at all
-          return
-        }
-    
-        const worker = new Worker('canvas-worker.js');
-        worker.postMessage({canvas: offscreen, speApp, events, scene, setIsLoading, onLoad}, [offscreen]);
+      const canvas = canvasRef.current
 
-/*
-        async function init() {
-          await speApp.load(scene);
-
-          for (let event of events) {
-            if (event.cb) {
-              speApp.addEventListener(event.name, event.cb);
-            }
-          }
-
-          setIsLoading(false);
-          onLoad?.(speApp);
-        }
-
-        init();
-        */
+      let offscreen
+      try {
+        // @ts-ignore
+        offscreen = canvasRef.current.transferControlToOffscreen()
+      } catch (e) {
+        // Browser doesn't support offscreen canvas at all
+        return
       }
 
-      return () => {
-        for (let event of events) {
-          if (event.cb) {
-            speApp.removeEventListener(event.name, event.cb);
-          }
+
+      // @ts-ignore
+      worker.onmessage = function (event) {
+        const { type, payload } = event.data;
+
+        switch (type) {
+          case 'initialized':
+            break;
+          case 'loaded':
+            setIsLoading(false);
+            onLoad?.(payload);
+            break;
+          // Add more cases as needed for other events
+          default:
+            break;
         }
-        speApp.dispose();
       };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [scene]);
+
+      // Initialize the worker
+      // @ts-ignore
+      worker.postMessage({
+        type: 'init',
+        offscreen,
+      }, [offscreen]);
+
+      // Load the scene
+      // @ts-ignore
+      worker.postMessage({
+        type: 'load',
+        payload: scene,
+      });
+
+      // Cleanup logic
+      // @ts-ignore
+      return () => {
+        // @ts-ignore
+        worker.postMessage({
+          type: 'dispose',
+        });
+      };
+    }, [scene, onLoad, renderOnDemand, worker]);
 
     return (
-      <ParentSize
+      <div
         ref={ref}
-        parentSizeStyles={style}
-        debounceTime={50}
-        {...props}
-      >
-        {() => {
-          return (
-            <canvas
-              ref={canvasRef}
-              style={{
-                display: isLoading ? 'none' : 'block',
-              }}
-            />
-          );
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          ...style,
         }}
-      </ParentSize>
+      >
+        <canvas
+          ref={canvasRef}
+          style={{
+            display: isLoading ? 'none' : 'block',
+            width: '100%',
+            height: '100%',
+          }}
+          {...props}
+        />
+      </div>
     );
   }
 );
