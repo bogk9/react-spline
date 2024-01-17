@@ -1,5 +1,5 @@
 {
-  "name": "@splinetool/react-spline",
+  "name": "@boguskania/react-spline-offscreen",
   "version": "2.2.6",
   "packageManager": "yarn@3.3.0",
   "files": [
@@ -49,5 +49,11 @@
   "dependencies": {
     "lodash.debounce": "^4.0.8",
     "react-merge-refs": "^2.0.1"
-  }
+  },
+  "description": "[![](https://raw.githubusercontent.com/splinetool/react-spline/main/.github/screenshots/hero.png)](https://my.spline.design/splinereactlogocopycopy-eaa074bf6b2cc82d870c96e262a625ae/)",
+  "directories": {
+    "example": "example"
+  },
+  "author": "",
+  "license": "ISC"
 }
