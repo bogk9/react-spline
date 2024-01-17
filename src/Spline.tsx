@@ -109,7 +109,7 @@ const Spline = forwardRef<HTMLDivElement, SplineProps>(
         const offscreenCanvas = canvasRef.current.transferControlToOffscreen();
         const worker = new Worker('canvas-worker.js');
 
-        worker.postMessage({canvas: offscreenCanvas, speApp, events, scene, setIsLoading, onLoad}, [offscreenCanvas]);
+        worker.postMessage({canvas: offscreenCanvas}, [offscreenCanvas]);
 
 /*
         async function init() {
