@@ -107,10 +107,10 @@ const Spline = forwardRef<HTMLDivElement, SplineProps>(
 
       if (canvasRef.current) {
         speApp = new Application(canvasRef.current, { renderOnDemand });
-        let canvas = canvasRef.current;
+        let canvas: any = canvasRef.current;
         let offscreenCanvas: OffscreenCanvas;
 
-        if(!isCanvasOffscreen){
+        if(!canvas.oncontextrestored){
           console.log("SETTTTTTING")
           offscreenCanvas = canvas.transferControlToOffscreen();
           setIsCanvasOffscreen(true);
